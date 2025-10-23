@@ -10,6 +10,8 @@
 T = 0.01;
 
 %% Plant Poles and Coefficients in its Partial Fraction Decomposition
+T =2 * pi / ( 1/tau * ~7) 
+
 
 K1 = 2.065 ;
 tau = 0.0231;
@@ -38,9 +40,12 @@ G
 %% Poles Chosen in the Simple Pole Approximation of W[z]
 
 realWPoles = [];
-complexWPoles = [-0.2909 - 0.1241i, -0.2909 + 0.1241i ,  0.1325 - 0.4271i, 0.1325 + 0.4271i ,0.5421 - 0.0782i , 0.5421 + 0.0782i   0.4376 + 0.4566i   0.4376 - 0.4566i
-                 -0.0513 + 0.7052i  -0.0513 - 0.7052i  -0.5712 + 0.5232i  -0.5712 - 0.5232i  -0.8358 + 0.0383i  -0.8358 - 0.0383i  -0.7373 - 0.5063i  -0.7373 + 0.5063i
-                 -0.3350 - 0.8876i  -0.3350 + 0.8876i   0.2128 - 0.9771i   0.2128 + 0.9771i];
+complexWPoles = [-0.1645 - 0.0702i  -0.1645 + 0.0702i   0.0750 - 0.2416i   0.0750 + 0.2416i   0.3067 - 0.0442i   0.3067 + 0.0442i   0.2476 + 0.2583i   0.2476 - 0.2583i  -0.0290 + 0.3989i ...
+                 -0.0290 - 0.3989i  -0.3231 + 0.2960i  -0.3231 - 0.2960i  -0.4728 + 0.0217i  -0.4728 - 0.0217i  -0.4171 - 0.2864i  -0.4171 + 0.2864i  -0.1895 - 0.5021i  -0.1895 + 0.5021i ...
+                 0.1204 - 0.5527i   0.1204 + 0.5527i   0.4094 - 0.4294i   0.4094 + 0.4294i   0.5944 - 0.1751i   0.5944 + 0.1751i   0.6301 + 0.1376i   0.6301 - 0.1376i   0.5130 + 0.4299i ... 
+                 0.5130 - 0.4299i   0.2748 + 0.6360i   0.2748 - 0.6360i  -0.0304 + 0.7149i  -0.0304 - 0.7149i  -0.3398 + 0.6546i  -0.3398 - 0.6546i  -0.5957 + 0.4702i  -0.5957 - 0.4702i ...
+                 -0.7543 + 0.1975i  -0.7543 - 0.1975i  -0.7916 - 0.1159i  -0.7916 + 0.1159i];
+
 ps = [realWPoles complexWPoles];
 
 mreal = length(realWPoles);
@@ -179,24 +184,24 @@ Objective = 0;
 Constraints = [A * [w;x;xhat] == b];
 
 % input saturation constraint
-% Constraints = [Constraints,
-%                max(step_ru * w) <= 6, 
-%                min(step_ru * w) >= -6];
+Constraints = [Constraints,
+               max(step_ru * w) <= 6, 
+               min(step_ru * w) >= -6];
 
 % steady state constraint
 Constraints = [Constraints,
                1 + steadyState * [x;xhat] == 0];
 
 % overshoot constraint
-% Constraints = [Constraints,
-%                * <= *];
+Constraints = [Constraints,
+               max(step_ry * [x;xhat]) <= 1.2 * (-steadyState * [x;xhat])];
 
 % settling time constraint
-% Ts = 0.25;
-% jhat = ceil(Ts/T);
-% Constraints = [Constraints,
-%                max(step_ry(jhat:end, :) * [x;xhat]) <= 1.02 * (-steadyState * [x;xhat]),
-%                min(step_ry(jhat:end, :) * [x;xhat]) >= 0.98 * (-steadyState * [x;xhat])];
+Ts = 0.25;
+jhat = ceil(Ts/T);
+Constraints = [Constraints,
+               max(step_ry(jhat:end, :) * [x;xhat]) <= 1.02 * (-steadyState * [x;xhat]),
+               min(step_ry(jhat:end, :) * [x;xhat]) >= 0.98 * (-steadyState * [x;xhat])];
 
 %% Solving the optimization problem
 
@@ -240,8 +245,7 @@ else
 end
 hold off;
 colormap(jet);
-colorbar;
-
+colorbar
 %% Recover the transfer functions
 
 z = tf('z',T);

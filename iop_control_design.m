@@ -10,6 +10,8 @@
 T = 0.01;
 
 %% Plant Poles and Coefficients in its Partial Fraction Decomposition
+T = 2 * pi / ( 1/tau * ~7) 
+
 
 K1 = 2.065 ;
 tau = 0.0231;
@@ -38,10 +40,11 @@ G
 %% Poles Chosen in the Simple Pole Approximation of W[z]
 
 realWPoles = [];
-complexWPoles = [-0.1851 - 0.0790i  -0.1851 + 0.0790i   0.0843 - 0.2718i   0.0843 + 0.2718i   0.3450 - 0.0498i   0.3450 + 0.0498i   0.2785 + 0.2906i   0.2785 - 0.2906i  -0.0327 + 0.4488i  -0.0327 - 0.4488i  -0.3635 + 0.3330i ...
-    -0.3635 - 0.3330i  -0.5319 + 0.0244i  -0.5319 - 0.0244i  -0.4692 - 0.3222i  -0.4692 + 0.3222i  -0.2132 - 0.5649i  -0.2132 + 0.5649i   0.1354 - 0.6218i   0.1354 + 0.6218i   0.4606 - 0.4831i   0.4606 + 0.4831i ...
-     0.6687 - 0.1970i   0.6687 + 0.1970i   0.7089 + 0.1548i   0.7089 - 0.1548i   0.5772 + 0.4836i   0.5772 - 0.4836i   0.3091 + 0.7155i   0.3091 - 0.7155i  -0.0342 + 0.8043i  -0.0342 - 0.8043i  -0.3823 + 0.7364i ...
-     0.3823 - 0.7364i  -0.6702 + 0.5290i  -0.6702 - 0.5290i  -0.8486 + 0.2222i  -0.8486 - 0.2222i  -0.8905 - 0.1304i  -0.8905 + 0.1304i];
+complexWPoles = [-0.1645 - 0.0702i  -0.1645 + 0.0702i   0.0750 - 0.2416i   0.0750 + 0.2416i   0.3067 - 0.0442i   0.3067 + 0.0442i   0.2476 + 0.2583i   0.2476 - 0.2583i  -0.0290 + 0.3989i ...
+                 -0.0290 - 0.3989i  -0.3231 + 0.2960i  -0.3231 - 0.2960i  -0.4728 + 0.0217i  -0.4728 - 0.0217i  -0.4171 - 0.2864i  -0.4171 + 0.2864i  -0.1895 - 0.5021i  -0.1895 + 0.5021i ...
+                 0.1204 - 0.5527i   0.1204 + 0.5527i   0.4094 - 0.4294i   0.4094 + 0.4294i   0.5944 - 0.1751i   0.5944 + 0.1751i   0.6301 + 0.1376i   0.6301 - 0.1376i   0.5130 + 0.4299i ... 
+                 0.5130 - 0.4299i   0.2748 + 0.6360i   0.2748 - 0.6360i  -0.0304 + 0.7149i  -0.0304 - 0.7149i  -0.3398 + 0.6546i  -0.3398 - 0.6546i  -0.5957 + 0.4702i  -0.5957 - 0.4702i ...
+                 -0.7543 + 0.1975i  -0.7543 - 0.1975i  -0.7916 - 0.1159i  -0.7916 + 0.1159i];
 
 ps = [realWPoles complexWPoles];
 
@@ -181,9 +184,9 @@ Objective = 0;
 Constraints = [A * [w;x;xhat] == b];
 
 % input saturation constraint
-% Constraints = [Constraints,
-%                max(step_ru * w) <= 6, 
-%                min(step_ru * w) >= -6];
+Constraints = [Constraints,
+               max(step_ru * w) <= 6, 
+               min(step_ru * w) >= -6];
 
 % steady state constraint
 Constraints = [Constraints,
@@ -194,11 +197,11 @@ Constraints = [Constraints,
                max(step_ry * [x;xhat]) <= 1.2 * (-steadyState * [x;xhat])];
 
 % settling time constraint
-% Ts = 0.25;
-% jhat = ceil(Ts/T);
-% Constraints = [Constraints,
-%                max(step_ry(jhat:end, :) * [x;xhat]) <= 1.02 * (-steadyState * [x;xhat]),
-%                min(step_ry(jhat:end, :) * [x;xhat]) >= 0.98 * (-steadyState * [x;xhat])];
+Ts = 0.25;
+jhat = ceil(Ts/T);
+Constraints = [Constraints,
+               max(step_ry(jhat:end, :) * [x;xhat]) <= 1.02 * (-steadyState * [x;xhat]),
+               min(step_ry(jhat:end, :) * [x;xhat]) >= 0.98 * (-steadyState * [x;xhat])];
 
 %% Solving the optimization problem
 
