@@ -265,16 +265,16 @@ z = tf('z',T);
 % calculate W
 W = 0;
 for i=1:m
-    W = W + *;
+    W = W + wsol(i) / (z- ps(i));
 end
 
 % calculate X
 X = 1;
 for i=1:m
-    X = X + *;
+    X = X + xsol(i)/ (z - ps(i));
 end
 for k=1:nhat
-    X = X + *;
+    X = X + xhatsol(k) / (z - qs(k));
 end
 
 % remove the imaginary coefficients in W
@@ -301,7 +301,7 @@ pole(X)
 
 % compute D by hand
 j = sqrt(-1);
-D = *;
+D = ;
 
 % compute T_ry and T_ru by hand
 T_ry = *;
