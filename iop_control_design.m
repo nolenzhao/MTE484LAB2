@@ -10,20 +10,31 @@
 T = 0.01;
 
 %% Plant Poles and Coefficients in its Partial Fraction Decomposition
-T = 2 * pi / ( 1/tau * ~7) 
+% T = 2 * pi / ( 1/tau * ~7) 
 
 
 K1 = 2.065 ;
 tau = 0.0231;
-stableRealPlantPoles = [0];
-stableComplexPlantPoles = [];
-unstablePlantPoles = [-1/tau];
 
+% G = tf([K1], [tau, 1, 0]);
+s = tf('s');
+G = K1 / (s * (s * tau + 1));
+Gd = c2d(G, T);
+Gd_poles = pole(Gd);
+Gd_zeros = zero(Gd);
+
+%% Get Poles
+
+stableRealPlantPoles = [0.6486];
+stableComplexPlantPoles = [];
+unstablePlantPoles = [1];
+% 
 stablePlantPoles = [stableRealPlantPoles stableComplexPlantPoles];
 qs = [stablePlantPoles unstablePlantPoles];
 
 % coefficents go in order of the poles
-cs = [K1 -K1*tau];
+cs = [0.0166629 0.0205519];
+
 
 n = length(qs);
 nhat = length(stablePlantPoles);
@@ -31,11 +42,12 @@ nreal = length(stableRealPlantPoles);
 ncomplex = length(stableComplexPlantPoles);
 
 % verify that your plant is correct!
-G = 0;
-for k=1:n
-    G = G + cs(k) / qs(k);
-end
-G
+% z = tf('z', T)
+% G = 0;
+% for k=1:n
+%     G = G + cs(k) / (z - qs(k));
+% end
+% G
 
 %% Poles Chosen in the Simple Pole Approximation of W[z]
 
@@ -194,7 +206,7 @@ Constraints = [Constraints,
 
 % overshoot constraint
 Constraints = [Constraints,
-               max(step_ry * [x;xhat]) <= 1.2 * (-steadyState * [x;xhat])];
+               max(step_ry * [x;xhat]) <= 1.05 * (-steadyState * [x;xhat])];
 
 % settling time constraint
 Ts = 0.25;
