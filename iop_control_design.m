@@ -301,19 +301,19 @@ pole(X)
 
 % compute D by hand
 j = sqrt(-1);
-D = ;
+D = minreal(W/X);
 
 % compute T_ry and T_ru by hand
-T_ry = *;
-T_ru = *;
+T_ru = minreal(D / (1 + Gd * D));
+T_ry = minreal((Gd * D )/ ( 1 + Gd * D)) ;
 
 figure(1)
 hold on;
-*;
+step(T_ry);
 hold off;
 
 figure(2)
 hold on;
-*;
+step(T_ru);
 hold off;
 
