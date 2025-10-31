@@ -7,25 +7,33 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 % set time step
-T = 0.01;
+
 
 %% Plant Poles and Coefficients in its Partial Fraction Decomposition
-% T = 2 * pi / ( 1/tau * ~7) 
 
+% Old values
+% K1 = 2.065;
+% tau = 0.0231;
 
-K1 = 2.065 ;
-tau = 0.0231;
+% Given Values
+K1 = 2.768;
+tau = 0.026;
 
+w_bw = 1 / tau;
+w_s = 7 * w_bw; 
+T = (2 * pi) / (w_s);
+% T = 0.01;
 % G = tf([K1], [tau, 1, 0]);
 s = tf('s');
 G = K1 / (s * (s * tau + 1));
+
 Gd = c2d(G, T);
 Gd_poles = pole(Gd);
 Gd_zeros = zero(Gd);
 
 %% Get Poles
 
-stableRealPlantPoles = [0.6486];
+stableRealPlantPoles = [0.4075];
 stableComplexPlantPoles = [];
 unstablePlantPoles = [1];
 % 
@@ -33,7 +41,7 @@ stablePlantPoles = [stableRealPlantPoles stableComplexPlantPoles];
 qs = [stablePlantPoles unstablePlantPoles];
 
 % coefficents go in order of the poles
-cs = [0.0166629 0.0205519];
+cs = [-0.04262 0.0646];
 
 
 n = length(qs);
@@ -52,8 +60,14 @@ ncomplex = length(stableComplexPlantPoles);
 %% Poles Chosen in the Simple Pole Approximation of W[z]
 
 realWPoles = [];
-complexWPoles = [-0.1327 - 0.0993i  -0.1327 + 0.0993i   0.2060 - 0.3417i   0.2060 + 0.3417i   0.5337 - 0.0625i   0.5337 + 0.0625i   0.4501 + 0.3653i   0.4501 - 0.3653i   0.0589 + 0.5642i   0.0589 - 0.5642i  -0.3570 + 0.4186i ...
-                -0.3570 - 0.4186i  -0.5686 + 0.0307i  -0.5686 - 0.0307i  -0.4899 - 0.4050i  -0.4899 + 0.4050i  -0.1680 - 0.7101i  -0.1680 + 0.7101i   0.2702 - 0.7817i   0.2702 + 0.7817i];
+complexWPoles = [
+    -0.1124 - 0.0906i  -0.1124 + 0.0906i   0.1968 - 0.3119i   0.1968 + 0.3119i   ...
+    %0.4959 - 0.0571i   0.4959 + 0.0571i  ... 
+    % 0.4196 + 0.3335i   0.4196 - 0.3335i ... 
+    % 0.0625 + 0.5150i   0.0625 - 0.5150i  -0.3171 + 0.3821i  -0.3171 - 0.3821i  -0.5104 + 0.0280i  -0.5104 - 0.0280i  -0.4385 - 0.3698i  -0.4385 + 0.3698i ...
+    % -0.1446 - 0.6482i  -0.1446 + 0.6482i   0.2554 - 0.7136i   0.2554 + 0.7136i   0.6285 - 0.5544i   0.6285 + 0.5544i    ...
+    % 0.8674 - 0.2260i   0.8674 + 0.2260i ...
+    ];
 
 ps = [realWPoles complexWPoles];
 
@@ -190,7 +204,7 @@ end
 Objective = 0;
 
 % IOP constraint
-Constraints = [A * [w;x;xhat] == b];
+Constraints = A * [w;x;xhat] == b;
 
 % input saturation constraint
 Constraints = [Constraints,

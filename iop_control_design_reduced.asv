@@ -7,11 +7,13 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 % set time step
-T = 0.01;
+T = 0.03;
 
 %% Plant Poles and Coefficients in its Partial Fraction Decomposition
 % T = 2 * pi / ( 1/tau * ~7) 
 
+%/// tau * 3-1
+% 2pi/7 * tau
 
 K1 = 2.065 ;
 tau = 0.0231;
@@ -52,8 +54,8 @@ ncomplex = length(stableComplexPlantPoles);
 %% Poles Chosen in the Simple Pole Approximation of W[z]
 
 realWPoles = [];
-complexWPoles = [-0.1327 - 0.0993i  -0.1327 + 0.0993i   0.2060 - 0.3417i   0.2060 + 0.3417i   0.5337 - 0.0625i   0.5337 + 0.0625i   0.4501 + 0.3653i   0.4501 - 0.3653i   0.0589 + 0.5642i   0.0589 - 0.5642i  -0.3570 + 0.4186i ...
-                -0.3570 - 0.4186i  -0.5686 + 0.0307i  -0.5686 - 0.0307i  -0.4899 - 0.4050i  -0.4899 + 0.4050i  -0.1680 - 0.7101i  -0.1680 + 0.7101i   0.2702 - 0.7817i   0.2702 + 0.7817i];
+complexWPoles = [
+     -0.2085 - 0.1316i  -0.2085 + 0.1316i   0.2406 - 0.4530i   0.2406 + 0.4530i   0.6750 - 0.0829i   0.6750 + 0.0829i   0.5642 + 0.4843i   0.5642 - 0.4843i   0.0455 + 0.7480i 0.0455 - 0.7480i];
 
 ps = [realWPoles complexWPoles];
 
