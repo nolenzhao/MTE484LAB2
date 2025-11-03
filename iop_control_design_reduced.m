@@ -206,25 +206,26 @@ Objective = 0;
 % IOP constraint
 Constraints = A * [w;x;xhat] == b;
 
+% Scale by 1.4 since input is no longer the unit step
 % input saturation constraint
 Constraints = [Constraints,
-               max(step_ru * w) <= 6, 
-               min(step_ru * w) >= -6];
+               max(step_ru * w) * 1.4 <= 6, 
+               min(step_ru * w) * 1.4 >= -6];
 
 % steady state constraint
 Constraints = [Constraints,
-               1 + steadyState * [x;xhat] == 0];
+               1 + 0.4 + steadyState * [x;xhat] == 0];
 
 % overshoot constraint
 Constraints = [Constraints,
-               max(step_ry * [x;xhat]) <= 1.05 * (-steadyState * [x;xhat])];
+               max(step_ry * [x;xhat]) * 1.4 <= 1.05 * (0.4 -steadyState * [x;xhat])];
 
 % settling time constraint
-Ts = 0.25;
+Ts = 0.4;
 jhat = ceil(Ts/T);
 Constraints = [Constraints,
-               max(step_ry(jhat:end, :) * [x;xhat]) <= 1.02 * (-steadyState * [x;xhat]),
-               min(step_ry(jhat:end, :) * [x;xhat]) >= 0.98 * (-steadyState * [x;xhat])];
+               max(step_ry(jhat:end, :) * [x;xhat]) * 1.4 <= 1.02 * (0.4 -steadyState * [x;xhat]),
+               min(step_ry(jhat:end, :) * [x;xhat]) * 1.4 >= 0.98 * (0.4 -steadyState * [x;xhat])];
 
 %% Solving the optimization problem
 

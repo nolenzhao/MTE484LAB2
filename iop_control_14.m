@@ -61,8 +61,7 @@ ncomplex = length(stableComplexPlantPoles);
 
 realWPoles = [];
 complexWPoles = [
-    -0.1124 - 0.0906i  -0.1124 + 0.0906i   0.1968 - 0.3119i   0.1968 + 0.3119i   ...
-    %0.4959 - 0.0571i   0.4959 + 0.0571i  ... 
+    -0.1124 - 0.0906i  -0.1124 + 0.0906i   0.1968 - 0.3119i   0.1968 + 0.3119i  0.4959 - 0.0571i   0.4959 + 0.0571i  ... 
     % 0.4196 + 0.3335i   0.4196 - 0.3335i ... 
     % 0.0625 + 0.5150i   0.0625 - 0.5150i  -0.3171 + 0.3821i  -0.3171 - 0.3821i  -0.5104 + 0.0280i  -0.5104 - 0.0280i  -0.4385 - 0.3698i  -0.4385 + 0.3698i ...
     % -0.1446 - 0.6482i  -0.1446 + 0.6482i   0.2554 - 0.7136i   0.2554 + 0.7136i   0.6285 - 0.5544i   0.6285 + 0.5544i    ...
@@ -166,7 +165,8 @@ for k=1:nhat
 end
 
 % verify on a simple example that steadyState is correct!
-steadyState
+% Scale steady state by 1.4
+steadyState;
 
 %% Defining the variables for the optimization
 
@@ -206,25 +206,26 @@ Objective = 0;
 % IOP constraint
 Constraints = A * [w;x;xhat] == b;
 
+% Scale by 1.4 since input is no longer the unit step
 % input saturation constraint
 Constraints = [Constraints,
-               max(step_ru * w) <= 6, 
-               min(step_ru * w) >= -6];
+               max(step_ru * w) * 1.4 <= 6, 
+               min(step_ru * w) * 1.4 >= -6];
 
 % steady state constraint
 Constraints = [Constraints,
-               1 + steadyState * [x;xhat] == 0];
+               1.4 + steadyState * [x;xhat] * 1.4 == 0];
 
 % overshoot constraint
 Constraints = [Constraints,
-               max(step_ry * [x;xhat]) <= 1.05 * (-steadyState * [x;xhat])];
+               max(step_ry * [x;xhat]) * 1.4 <= 1.05 * (-steadyState * [x;xhat] * 1.4)];
 
 % settling time constraint
-Ts = 0.25;
+Ts = 0.4;
 jhat = ceil(Ts/T);
 Constraints = [Constraints,
-               max(step_ry(jhat:end, :) * [x;xhat]) <= 1.02 * (-steadyState * [x;xhat]),
-               min(step_ry(jhat:end, :) * [x;xhat]) >= 0.98 * (-steadyState * [x;xhat])];
+               max(step_ry(jhat:end, :) * [x;xhat]) * 1.4 <= 1.02 * (-steadyState *[x;xhat] * 1.4),
+               min(step_ry(jhat:end, :) * [x;xhat]) * 1.4 >= 0.98 * (-steadyState * [x;xhat] * 1.4)];
 
 %% Solving the optimization problem
 
@@ -242,12 +243,13 @@ xhatsol = value(xhat);
 %% Plotting the solution
 
 figure(1)
-plot(T*(1:K),step_ry*[xsol;xhatsol]);
+plot(T*(1:K),step_ry*[xsol;xhatsol] * 1.4);
 xlabel('Time [s]');
 ylabel('y[k]');
+axis tight;
 
 figure(2)
-plot(T*(1:K),step_ru*wsol);
+plot(T*(1:K),step_ru*wsol * 1.4);
 xlabel('Time [s]');
 ylabel('u[k]');
 
@@ -320,11 +322,11 @@ T_ry = minreal((Gd * D )/ ( 1 + Gd * D)) ;
 
 figure(1)
 hold on;
-step(T_ry);
+step(T_ry * 1.4);
 hold off;
 
 figure(2)
 hold on;
-step(T_ru);
+step(T_ru * 1.4);
 hold off;
 
